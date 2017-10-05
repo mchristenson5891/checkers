@@ -1,0 +1,20 @@
+* {
+  border: 1px solid red;
+}
+
+.row {
+  height: 6.5rem;
+}
+
+div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(2n) {
+  background:#132242;
+}
+
+.selected{
+  background: yellow !important;
+}
+
+.piece {
+  text-align: center;
+  font-size: 24px;
+}
