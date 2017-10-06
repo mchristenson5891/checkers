@@ -11,7 +11,7 @@ var gameBoard = [
 
 const pieces = [];
 const squares = [];
-let isPlayerRed = true;
+let isPlayerRed = false;
 
 Math.getDistance = function( x1, y1, x2, y2 ) {
   return Math.sqrt(Math.pow((x1-x2),2)+Math.pow((y1-y2),2));
@@ -23,7 +23,6 @@ class Piece {
     this.position = position,
     this.x = position[0],
     this.y = position[1]
-
   }
 }
 
@@ -34,16 +33,35 @@ class Square {
     this.y =position[1]
   }
 
-
-
   inRange (piece, diffPostions) {
-    if(Math.getDistance(this.x, this.y, piece.x, piece.y) === Math.sqrt(2)) {
+    if(Math.getDistance(this.x, this.y, piece.x, piece.y) === Math.sqrt(2) && gameBoard[this.x][this.y] === (isPlayerRed ? 2 : 1)) {
+      let diff;
+      if(isPlayerRed) {
+        if(piece.y > this.y) {
+          diff = [this.x+1, this.y-1]
+        }else {
+          diff = [this.x+1, this.y+1]
+        }
+      }else {
+        if(piece.y > this.y) {
+          diff = [this.x-1, this.y-1]
+        }else {
+          diff = [this.x-1, this.y+1]
+        }
+      }
+
+      if(this.checkForJump(diff)) {
+        $(`#${diff[0]}>[data-type=${diff[1]}]`).addClass("legel-move jump");
+      }
+    }else if (Math.getDistance(this.x, this.y, piece.x, piece.y) === Math.sqrt(2) && !$(this.element).hasClass("piece")) {
       $(this.element).addClass("legel-move");
     }
   };
 
-  checkForJump () {
-    console.log(this)
+  checkForJump (diff) {
+    if(Math.getDistance(this.x, this.y, diff[0], diff[1]) === Math.sqrt(2) && !$(`#${diff[0]}>[data-type=${diff[1]}]`).hasClass("piece")){
+      return true;
+    }
   }
 }
 
@@ -54,11 +72,6 @@ function checkForLegelMoves(currentSquare, currentPiece) {
   let pieceSquareNumber = parseInt($(currentSquare).attr("square-number"));
   for (let index = 0; index < squares.length; index++) {
     let blankSquare = squares[index]
-
-    // if(blankSquare.x === diffX && blankSquare.y === diffY) {
-    //   blankSquare.element.addClass("legel-move")
-    // }
-
     let blankSquareNumber = parseInt($(blankSquare.element).attr("square-number"));
     let distance = Math.getDistance(currentPiece.x, currentPiece.y, blankSquare.x, blankSquare.y);
     if(isPlayerRed) {
@@ -79,7 +92,6 @@ const board = {
   initalize: function() {
     $('.row').remove();
     $('.square').removeClass("selected").removeAttr("coor");
-
     let pieceCount = 0;
     let squareCount = 0;
     this.board.forEach(function(row,index) {
@@ -122,6 +134,9 @@ function add () {
     $(this).addClass("diff");
 
     checkForLegelMoves($(this), currentPiece);// this give a class of diff which turns the color of the piece a different color
+    if($(".jump").length > 0) {
+      $(".col").not(".jump").removeClass("legel-move")
+    }
     addEventListeners(pieces[$(this).attr('piece-num')]) //this function will display the squares with the legel moves. it passes the the postion of the piece.
   })
 }
@@ -133,6 +148,29 @@ function addEventListeners(positions, turn) {
 
   $(".legel-move").on("click", function() {
     var selectedSquare = squares[$(this).attr("square-Number")];
+    if($(selectedSquare.element).hasClass("jump")) {
+      if(!isPlayerRed) {
+        if(column < selectedSquare.y) {
+          diff = [selectedSquare.x+1, selectedSquare.y-1]
+        }else {
+          diff = [selectedSquare.x+1, selectedSquare.y+1]
+        }
+      }else {
+        if(column < selectedSquare.y) {
+          diff = [selectedSquare.x-1, selectedSquare.y-1]
+        }else {
+          diff = [selectedSquare.x-1, selectedSquare.y+1]
+        }
+      }
+
+      gameBoard[selectedSquare.x][selectedSquare.y] = isPlayerRed ? 1 : 2;
+      gameBoard[diff[0]][diff[1]] = 0
+      gameBoard[row][column] = 0
+      isPlayerRed = isPlayerRed ? false : true;
+      board.initalize();
+      return 
+    }
+    var selectedSquare = squares[$(this).attr("square-Number")];
     gameBoard[selectedSquare.x][selectedSquare.y] = isPlayerRed ? 1 : 2;
     gameBoard[row][column] = 0
     isPlayerRed = isPlayerRed ? false : true;
@@ -142,64 +180,7 @@ function addEventListeners(positions, turn) {
 
 }
 
- //find what the displacement is
-      // var dx = newPosition[1] - this.position[1];
-      // var dy = newPosition[0] - this.position[0];
-      // this.canJumpAny = function () {
-      //   if(this.canOpponentJump([this.position[0]+2, this.position[1]+2]) ||
-      //      this.canOpponentJump([this.position[0]+2, this.position[1]-2]) ||
-      //      this.canOpponentJump([this.position[0]-2, this.position[1]+2]) ||
-      //      this.canOpponentJump([this.position[0]-2, this.position[1]-2])) {
-      //     return true;
-      //   } return false;
-      // };
-      
 
 add()
-
-
-// function seePiece(event) {
-//   if($(event.target).hasClass("piece")){
-//     let row = parseInt($(event.target).parent().attr("id"));
-//     let column = parseInt($(event.target).attr("data-type"));
-//     movePiece(row, column,event)
-//   }
-// }
-
-// function movePiece(row,column,event) {
-//   let moves;
-//   currentRow = column;
-//   if(board.turn === 1) {
-//     if(gameBoard[row+1][column+1] === 0) {
-//       $(`div#${row+1} > div[data-type = ${column+1}]`).addClass(`selected`)
-//     }
-//     if(gameBoard[row+1][column-1] === 0) {
-//       $(`div#${row+1} > div[data-type = ${column-1}]`).addClass(`selected`)
-//     }
-//   }else {
-//     if(gameBoard[row-1][column-1] === 0) {
-//       $(`div#${row-1} > div[data-type = ${column+1}]`).addClass(`selected`)
-//     }
-//     if(gameBoard[row-1][column+1] === 0) {
-//       $(`div#${row-1} > div[data-type = ${column-1}]`).addClass(`selected`)
-//     }
-//   }
-
-
-//   $(`.selected`).on(`click`, function() {
-//   let checkersRow = row;
-//   let column = currentRow
-//   gameBoard[checkersRow][column] = 0;
-//    let row1 = parseInt($(this).parent().attr("id"));
-//    let column1 = parseInt($(this).attr("data-type"));
-//     gameBoard[row1][column1] = board.turn;
-//     board.initalize();
-//   })
-
-//   }
-
-//   $('.container').on("click", Piece.handleClick)
-
-
 board.initalize();
  
