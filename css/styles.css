@@ -10,11 +10,23 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   background:#132242;
 }
 
-.selected{
+.legel-move{
   background: yellow !important;
 }
 
 .piece {
   text-align: center;
   font-size: 24px;
+}
+
+.diff {
+  color: yellowgreen
+}
+
+.move {
+  background-color: blue;
+}
+
+.jump {
+  background-color: purple;
 }
