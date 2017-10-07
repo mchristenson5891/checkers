@@ -20,9 +20,14 @@ Math.getDistance = function( x1, y1, x2, y2 ) {
 class Piece {
   constructor(element, position) {
     this.element = element,
-    this.position = position,
+    // this.position = position,
     this.x = position[0],
-    this.y = position[1]
+    this.y = position[1],
+    this.isKing = false
+  }
+
+  makeKing() {
+    this.king = true;
   }
 }
 
@@ -112,7 +117,7 @@ const board = {
             xOrO = "O"
           }
           if(xOrO === "X" || xOrO ==="O") {
-            $(`div#${index}>[data-type=${colInx}]`).addClass(`piece ${xOrO}`).attr("piece-num", `${pieceCount}`).text(xOrO);
+            $(`div#${index}>[data-type=${colInx}]`).addClass(`piece ${xOrO}`).attr("piece-num", `${pieceCount}`);
             pieces[pieceCount] = new Piece($(`#${index}>[data-type=${colInx}]`),[index, colInx]);
             pieceCount++
           }
@@ -130,9 +135,6 @@ function add () {
     let currentPiece = pieces[$(this).attr('piece-num')];
     if(!$(this).hasClass(`${isPlayerRed ? "X" : "O"}`)) return; // if its not the right players move it returns
     $(`.col`).removeClass(`legel-move`).unbind(); // this takes off all the squares with the class of selected and unbinds the onclick
-    $(`.piece`).removeClass("diff"); // takes of the color of the piece selected
-    $(this).addClass("diff");
-
     checkForLegelMoves($(this), currentPiece);// this give a class of diff which turns the color of the piece a different color
     if($(".jump").length > 0) {
       $(".col").not(".jump").removeClass("legel-move")
@@ -142,10 +144,8 @@ function add () {
 }
 
 function addEventListeners(positions, turn) {
-
-  let [row, column] = positions.position; // destructuring the arr 
-
-
+  let row = positions.x;
+  let column = positions.y;
   $(".legel-move").on("click", function() {
     var selectedSquare = squares[$(this).attr("square-Number")];
     if($(selectedSquare.element).hasClass("jump")) {

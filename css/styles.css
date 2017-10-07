@@ -30,3 +30,17 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
 .jump {
   background-color: purple;
 }
+
+.X {
+  background: url(http://www.iconsdb.com/icons/preview/red/circle-xxl.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.O {
+  background: url(http://www.iconsdb.com/icons/preview/blue/circle-xxl.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
