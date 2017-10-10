@@ -1,5 +1,5 @@
 // $(function(){
-  var gameBoard = [
+  let gameBoard = [
     [0, 1, 0, 1, 0, 1, 0, 1],
     [1, 0, 1, 0, 1, 0, 0, 0],
     [0, 1, 0, 1, 0, 1, 0, 1],
@@ -9,6 +9,7 @@
     [0, 2, 0, 2, 0, 2, 0, 2],
     [2, 0, 2, 0, 2, 0, 2, 0]
   ];
+
 
 
 
@@ -94,6 +95,10 @@
     }
   }
 
+  function getElement(piece) {
+    return gameBoard[$(piece).parent().attr("id")][$(piece).attr("data-column")];
+  }
+
   const board = {
     board: gameBoard,
 
@@ -109,6 +114,7 @@
           $(`#${y}`).append(`<div class="col" data-column=${x}></div>`)
           $(`#${y}>[data-column = ${x}]`).attr("square-number", `${squareCount}`);
           squares[squareCount] = new Square($(`#${y}>[data-column=${x}]`), [y, x])
+          gameBoard[y][x] = new Square($(`#${y}>[data-column=${x}]`), [y, x])
           squareCount++;
           let xOrO;
           // if the number in the gameBoard array its a 1 insert an X
@@ -121,6 +127,7 @@
           if (xOrO === "X" || xOrO === "O") {
             $(`div#${y}>[data-column=${x}]`).addClass(`piece ${xOrO}`).attr("piece-num", `${pieceCount}`);
             pieces[pieceCount] = new Piece($(`#${y}>[data-column=${x}]`), [y, x]);
+            gameBoard[y][x] = new Piece($(`#${y}>[data-column=${x}]`), [y, x]);
             pieceCount++
           }
         })
@@ -133,6 +140,7 @@
   function add() {
     $(`.piece`).on(`click`, function () {
       $(this).unbind();
+      let currentPiece = getElement(this)
       let currentPiece = pieces[$(this).attr('piece-num')];
       if (!$(currentPiece.element).hasClass(`${isPlayerRed ? "X" : "O"}`)) return; // if its not the right players move it returns
       $(`.legel-move`).unbind(); // this takes off all the squares with the class of selected and unbinds the onclick
