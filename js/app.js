@@ -1,13 +1,13 @@
 // $(function(){
 let gameBoard = [
   [0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 0, 1, 0, 1, 0, 0, 0],
-  [0, 1, 0, 1, 0, 2, 0, 1],
-  [0, 0, 0, 0, 1, 0, 0, 0],
-  [0, 0, 0, 2, 0, 2, 0, 0],
-  [2, 0, 0, 0, 2, 0, 0, 0],
-  [0, 2, 0, 1, 0, 2, 0, 2],
-  [0, 0, 2, 0, 0, 0, 0, 0]
+  [1, 0, 1, 0, 1, 0, 1, 0],
+  [0, 1, 0, 1, 0, 1, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [2, 0, 2, 0, 2, 0, 2, 0],
+  [0, 2, 0, 2, 0, 2, 0, 2],
+  [2, 0, 2, 0, 2, 0, 2, 0]
 ];
 let isPlayerRed = true;
 
@@ -145,7 +145,13 @@ const board = {
     if($(".can-jump").length > 0) {
       $(".move").removeClass("move")
     }
-    return addClickToPieces();
+    addClickToPieces();
+    if(!isPlayerRed) {
+      setTimeout("computerMove()", 2000)
+    }else {
+      return;
+    }
+    
   }
 }
 
@@ -214,7 +220,13 @@ function addEventListeners(piece) {
       checkForLegelMoves(piece)
       if(isThereAJump()) {
         $(".col").not(".jump").removeClass("legel-move")
-        return addEventListeners(piece)
+        addEventListeners(piece)
+        if(!isPlayerRed) {
+          return setTimeout("computerMove()", 800)
+        }else {
+          return;
+        }
+        
       }
     }
     removePiecesClick();
@@ -248,6 +260,20 @@ function findMoves() {
   })
   board.update();
 }
+
+function computerMove() {
+  let pieces = $(".can-jump").length > 0 ? ".can-jump" : ".move";
+  let randomPieceNumber = getRandomInt(0, $(pieces).length-1);
+  $($(pieces)[randomPieceNumber]).click();
+  let randomLegelMoveNumber = getRandomInt(0, $(".legel-move").length-1);
+  $($(".legel-move")[randomLegelMoveNumber]).click();
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
 
 board.initalize();
 
