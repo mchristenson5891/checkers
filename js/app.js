@@ -1,13 +1,13 @@
 // $(function(){
 let gameBoard = [
   [0, 1, 0, 1, 0, 1, 0, 1],
-  [1, 0, 1, 0, 1, 0, 1, 0],
-  [0, 1, 0, 1, 0, 1, 0, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [2, 0, 2, 0, 2, 0, 2, 0],
-  [0, 2, 0, 2, 0, 2, 0, 2],
-  [2, 0, 2, 0, 2, 0, 2, 0]
+  [1, 0, 1, 0, 1, 0, 0, 0],
+  [0, 1, 0, 1, 0, 2, 0, 1],
+  [0, 0, 0, 0, 1, 0, 0, 0],
+  [0, 0, 0, 2, 0, 2, 0, 0],
+  [2, 0, 0, 0, 2, 0, 0, 0],
+  [0, 2, 0, 1, 0, 2, 0, 2],
+  [0, 0, 2, 0, 0, 0, 0, 0]
 ];
 let isPlayerRed = true;
 
@@ -20,7 +20,17 @@ class Piece {
     this.element = element,
       this.x = position[1],
       this.y = position[0],
-      this.isKing = false
+      this.isKing = false,
+      this.canJump = false,
+      this.hasMove = false
+  }
+
+  makeMove() {
+    this.hasMove = this.hasMove ? false : true;
+  }
+
+  makeJump() {
+    this.canJump = this.canJump ? false : true;
   }
 
   makeKing() {
@@ -30,7 +40,7 @@ class Piece {
 
 class Square {
   constructor(element, position) {
-    this.element = $(element).removeClass("O X piece"),
+    this.element = $(element).removeClass("O X piece king"),
       this.x = position[1],
       this.y = position[0]
   }
@@ -117,12 +127,31 @@ const board = {
         }
       })
     })
-    return addClickToPieces()
+    return findMoves()
   },
+
+  update: function() {
+    gameBoard.forEach((row,y) => {
+      row.forEach((column,x) => {
+        if(column instanceof Piece) {
+          if(column.canJump) {
+            $(column.element).addClass("can-jump")
+          }else if(column.hasMove) {
+            column.element.addClass("move")
+          }
+        }
+      })
+    })
+    if($(".can-jump").length > 0) {
+      $(".move").removeClass("move")
+    }
+    return addClickToPieces();
+  }
 }
 
 function addClickToPieces() {
-  $(`.piece.${isPlayerRed ? "X" : "O"}`).on(`click`, function () {
+  var pieces = $(".can-jump").length > 0 ? ".can-jump" : ".move";
+  $(pieces).on(`click`, function () {
     let currentPiece = getElement(this)
     removeLegelMove()
     checkForLegelMoves(currentPiece);
@@ -130,7 +159,7 @@ function addClickToPieces() {
       $(".col").not(".jump").removeClass("legel-move")
     }
     addEventListeners(currentPiece)
-  }).addClass("turn")
+  })
 }
 
 function isThereAJump() {
@@ -142,7 +171,7 @@ function removeLegelMove() {
 }
 
 function removePiecesClick() {
-  return $(`.col`).unbind().removeClass("turn");
+  return $(`.col`).unbind().removeClass("turn can-jump move");
 }
 
 function jump(selectedSquare,piece) {
@@ -159,6 +188,9 @@ function updateToPiece(piece, selectedSquare) {
   let newPiece = $(`#${selectedSquare.y}>[data-column=${selectedSquare.x}]`)
     .addClass(`${isPlayerRed ? "X" : "O"} piece`)
     .attr("piece-num", $(selectedSquare.element).attr("piece-num"))
+  if(piece.isKing) {
+    $(newPiece).addClass("king");
+  }
   piece.element = newPiece;
   piece.y = selectedSquare.y;
   piece.x = selectedSquare.x;
@@ -188,9 +220,35 @@ function addEventListeners(piece) {
     removePiecesClick();
     removeLegelMove();
     isPlayerRed = isPlayerRed ? false : true;
-    addClickToPieces();
+    findMoves()
   })
 }
+
+
+function findMoves() {
+  gameBoard.forEach((row,y) => {
+    row.forEach((column, x) => {
+      removeLegelMove()
+      if(column instanceof Piece && $(column.element).hasClass(isPlayerRed ? "X" : "O")) {
+        checkForLegelMoves(column)
+        if(isThereAJump()) {
+          column.makeJump();
+        }
+        else if ($(".legel-move").length > 0) {
+          column.makeMove();
+        }
+      }else if (column instanceof Piece){
+        if(column.canJump) {
+          column.makeJump()
+        }else if(column.hasMove) {
+          column.makeMove();
+        }
+      }
+    })
+  })
+  board.update();
+}
+
 board.initalize();
 
 // })

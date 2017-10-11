@@ -1,5 +1,21 @@
-* {
+/* * {
   border: 1px solid red;
+} */
+
+body {
+  text-align: center;
+}
+
+header {
+  height: 7em;
+}
+
+header h1 {
+  padding-top: 25px;
+}
+
+main {
+  margin-top: 45px;
 }
 
 .row {
@@ -10,47 +26,84 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   background:#132242;
 }
 
+.container {
+  border: 1px lightgray solid;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  transition: 2000ms linear all;
+}
+
+
 .legel-move{
   background: yellow !important;
+}
+.X {
+  background: url(http://www.iconsdb.com/icons/preview/red/circle-xxl.png);
+}
+
+.O {
+  background: url(http://www.iconsdb.com/icons/preview/blue/circle-xxl.png);
+}
+
+.X.king {
+  background: url(http://images.clipartpanda.com/jubilee-clipart-Jubilee-crown-red.svg);
+  background-size: 3.3em;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.O.king {
+  background: url(http://images.clipartpanda.com/jubilee-clipart-Jubilee-crown-blue.svg);
+  background-size: 3.3em;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .piece {
   text-align: center;
   font-size: 24px;
+  background-size: 3.3em;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .diff {
   color: yellowgreen
 }
 
-.move {
-  background-color: blue;
-}
-
-.jump {
-  background-color: purple;
-}
-
-.X {
-  background: url(http://www.iconsdb.com/icons/preview/red/circle-xxl.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.O {
-  background: url(http://www.iconsdb.com/icons/preview/blue/circle-xxl.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.turn {
+.move, .can-jump {
   transform: perspective(1px) translateZ(0);
-  
 }
 
+.move:hover, .can-jump:hover {
+  transform: scale(1.3);
+}
+
+
+/* .turn {
+  transform: perspective(1px) translateZ(0);
+}
 
 .turn:hover {
   transform: scale(1.3);
+} */
+
+@media only screen and (max-width : 375px) {
+  .row {
+    height: 2.5rem;
+    width: 22.8em;
+  }
+}
+
+@media only screen and (min-device-width : 376px) and (max-device-width : 500px) {
+  .row {
+    height: 4.5rem;
+    width: 30.8em;
+  }
+}
+
+@media only screen and (min-device-width : 501px) and (max-device-width : 500px) {
+  .row {
+    height: 4.5rem;
+    width: 30.8em;
+  }
 }
