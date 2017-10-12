@@ -1,4 +1,11 @@
 // $(function(){
+$(".btn").on("click", function() {
+  playComputer = true
+  $(this).css({display: "none"})
+})
+
+let playComputer = false;
+
 let gameBoard = [
   [0, 1, 0, 1, 0, 1, 0, 1],
   [1, 0, 1, 0, 1, 0, 1, 0],
@@ -139,7 +146,7 @@ const board = {
       $(".move").removeClass("move")
     }
     addClickToPieces();
-    if (!isPlayerRed) {
+    if (!isPlayerRed && playComputer) {
       setTimeout("computerMove()", 2000)
     } else {
       return;
@@ -213,7 +220,7 @@ function addEventListeners(piece) {
         $(".col").not(".jump").removeClass("legel-move")
         addEventListeners(piece)
         if (!isPlayerRed) {
-          return setTimeout("computerMove()", 800)
+          return setTimeout("computerMove()", 500)
         } else {
           return;
         }
@@ -227,8 +234,8 @@ function addEventListeners(piece) {
     removePiecesClick();
     removeLegelMove();
     isPlayerRed = isPlayerRed ? false : true;
-    checkForWin();
     findMoves();
+    checkForWin();
   })
 }
 
@@ -260,8 +267,9 @@ function findMoves() {
 function computerMove() {
   let pieces = $(".can-jump").length > 0 ? ".can-jump" : ".move";
   let randomPieceNumber = getRandomInt(0, $(pieces).length - 1);
-  $($(pieces)[randomPieceNumber]).click();
+  $($(pieces)[randomPieceNumber]).click()
   let randomLegelMoveNumber = getRandomInt(0, $(".legel-move").length - 1);
+
   $($(".legel-move")[randomLegelMoveNumber]).click();
 }
 
@@ -271,12 +279,14 @@ function getRandomInt(min, max) {
 
 function checkForWin() {
   if ($(".X").length === 0) {
-    alert("X WINS!");
+    alert("O WINS!");
   } else if ($(".O").length === 0) {
-    alert("O WINS!")
+    alert("X WINS!")
   }
   return;
 }
+
+
 
 
 
