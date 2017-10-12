@@ -77,6 +77,7 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   background: url(http://www.clker.com/cliparts/E/H/P/3/G/D/yellow-border-th.png);
   background-repeat: no-repeat;
   background-position: center;
+  background-size: contain;
 }
 .X {
   background: url(http://www.iconsdb.com/icons/preview/red/circle-xxl.png);
