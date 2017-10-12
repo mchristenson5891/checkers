@@ -1,5 +1,5 @@
 // $(function(){
-  let playComputer
+let playComputer
 $("#play-computer").on("click", () => {
   playComputer = true;
   $("#overlay").css({display: "none"});
@@ -21,7 +21,8 @@ class Piece {
       this.y = position[0],
       this.isKing = false,
       this.canJump = false,
-      this.hasMove = false
+      this.hasMove = false,
+      this.moves = [];
   }
 
   makeMove() {
@@ -38,7 +39,8 @@ class Square {
   constructor(element, position) {
     this.element = $(element).removeClass("O X piece king"),
       this.x = position[1],
-      this.y = position[0]
+      this.y = position[0],
+      this.isAJump = false
   }
 
   isSquareEmpty() {
@@ -55,11 +57,14 @@ class Square {
 
   inRange(piece) {
     if (Math.getDistance(this.x, this.y, piece.x, piece.y) === Math.sqrt(2) && this.isSquareEmpty()) {
-      return $(this.element).addClass("legel-move");
+      piece.moves.push(this)
+      return $(this.element).addClass("legal-move");
     } else if (Math.getDistance(this.x, this.y, piece.x, piece.y) === Math.sqrt(2) * 2 && this.isSquareEmpty()) {
       let difference = this.middlePiece(piece);
       if ($(board.board[difference[0]][difference[1]].element).hasClass(board.isPlayerRed ? "O" : "X")) {
-        return $(this.element).addClass("legel-move jump");
+        $(this.element).addClass("legal-move jump");
+        this.isAJump = true;
+       return piece.moves.push(this)
       }
     }
   }
@@ -97,11 +102,11 @@ const board = {
     [0, 1, 0, 1, 0, 1, 0, 1],
     [1, 0, 1, 0, 1, 0, 1, 0],
     [0, 1, 0, 1, 0, 1, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 2, 0, 2, 0, 2, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 2, 0, 2, 0],
     [0, 2, 0, 2, 0, 2, 0, 2],
-    [2, 0, 2, 0, 2, 0, 2, 0]
+    [2, 0, 2, 0, 0, 0, 2, 0]
   ],
   isPlayerRed: true,
 
@@ -148,6 +153,7 @@ const board = {
     if ($(".can-jump").length > 0) {
       $(".move").removeClass("move")
     }
+    checkForWin();
     addClickToPieces();
     if (!board.isPlayerRed && playComputer) {
       setTimeout("computerMove()", 2000)
@@ -155,6 +161,29 @@ const board = {
       return;
     }
 
+  },
+
+  activateSquare: function(piece) {
+    piece.moves.forEach((ele) => {
+      if(ele.isAJump) {
+        return $(ele.element).addClass("legal-move jump")
+      }else{
+        return $(ele.element).addClass("legal-move")
+      }
+      
+    })
+  }, 
+
+  clearMoves: function() {
+    this.board.forEach((row) => {
+      row.forEach((column) => {
+        if (column instanceof Piece) {
+          column.moves = [];
+        }else {
+          column.isAJump = false;
+        }
+      })
+    })
   }
 }
 
@@ -163,9 +192,11 @@ function addClickToPieces() {
   $(pieces).on(`click`, function () {
     let currentPiece = getElement(this)
     removeLegelMove()
-    checkForLegelMoves(currentPiece);
+    board.activateSquare(currentPiece)
+
+    // checkForLegelMoves(currentPiece);
     if (isThereAJump()) {
-      $(".col").not(".jump").removeClass("legel-move")
+      $(".col").not(".jump").removeClass("legal-move")
     }
     addEventListeners(currentPiece)
   })
@@ -176,7 +207,7 @@ function isThereAJump() {
 }
 
 function removeLegelMove() {
-  return $(`.legel-move`).unbind().removeClass(`legel-move jump`);
+  return $(`.legal-move`).unbind().removeClass(`legal-move jump`);
 }
 
 function removePiecesClick() {
@@ -207,7 +238,7 @@ function updateToPiece(piece, selectedSquare) {
 }
 
 function addEventListeners(piece) {
-  $(".legel-move").on("click", function () {
+  $(".legal-move").on("click", function () {
     let selectedSquare = getElement(this);
     if ($(selectedSquare.element).hasClass("jump")) {
       jump(selectedSquare, piece)
@@ -220,7 +251,7 @@ function addEventListeners(piece) {
       removeLegelMove();
       checkForLegelMoves(piece)
       if (isThereAJump()) {
-        $(".col").not(".jump").removeClass("legel-move")
+        $(".col").not(".jump").removeClass("legal-move")
         addEventListeners(piece)
         if (!board.isPlayerRed) {
           return setTimeout("computerMove()", 500)
@@ -237,8 +268,8 @@ function addEventListeners(piece) {
     removePiecesClick();
     removeLegelMove();
     board.isPlayerRed = board.isPlayerRed ? false : true;
+    board.clearMoves()
     findMoves();
-    checkForWin();
   })
 }
 
@@ -252,7 +283,7 @@ function findMoves() {
         if (isThereAJump()) {
           column.makeJump();
         }
-        else if ($(".legel-move").length > 0) {
+        else if ($(".legal-move").length > 0) {
           column.makeMove();
         }
       } else if (column instanceof Piece) {
@@ -271,9 +302,9 @@ function computerMove() {
   let pieces = $(".can-jump").length > 0 ? ".can-jump" : ".move";
   let randomPieceNumber = getRandomInt(0, $(pieces).length - 1);
   $($(pieces)[randomPieceNumber]).click()
-  let randomLegelMoveNumber = getRandomInt(0, $(".legel-move").length - 1);
+  let randomLegelMoveNumber = getRandomInt(0, $(".legal-move").length - 1);
 
-  $($(".legel-move")[randomLegelMoveNumber]).click();
+  $($(".legal-move")[randomLegelMoveNumber]).click();
 }
 
 function getRandomInt(min, max) {
