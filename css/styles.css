@@ -31,11 +31,15 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   transform: rotate(0deg);
   transform-origin: 50% 50%;
   transition: 2000ms linear all;
+  box-shadow: 0px 0px 50px 0px rgba(0,0,0,0.75);
+  margin-bottom: 55px;
 }
 
 
 .legel-move{
-  background: yellow !important;
+  background: url(http://www.clker.com/cliparts/E/H/P/3/G/D/yellow-border-th.png);
+  background-repeat: no-repeat;
+  background-position: center;
 }
 .X {
   background: url(http://www.iconsdb.com/icons/preview/red/circle-xxl.png);
@@ -66,17 +70,15 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   background-position: center;
 }
 
-.diff {
-  color: yellowgreen
-}
-
-.move, .can-jump {
-  transform: perspective(1px) translateZ(0);
-  background-color: pink;
-}
-
-.move:hover, .can-jump:hover {
-  transform: scale(1.3);
+.move:before, .can-jump:before {
+  content: ' \25CF';
+  position: relative;
+  content: ' \25CF';
+  font-size: 117px;
+  top: -37px;
+  z-index: -1;
+  color: yellow;
+  opacity: .7;
 }
 
 
