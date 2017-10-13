@@ -1,3 +1,4 @@
+
 let demoJump = false;
 
 const board = {
