@@ -72,12 +72,9 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   margin-bottom: 55px;
 }
 
-
 .legal-move{
-  background: url(http://www.clker.com/cliparts/E/H/P/3/G/D/yellow-border-th.png);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+  background: url(http://www.clker.com/cliparts/E/H/P/3/G/D/yellow-border-th.png) no-repeat center;
+
 }
 .X {
   background: url(http://www.iconsdb.com/icons/preview/red/circle-xxl.png);
@@ -88,16 +85,13 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
 }
 
 .X.king {
-  background: url(http://images.clipartpanda.com/jubilee-clipart-Jubilee-crown-red.svg);
+  background: url(http://images.clipartpanda.com/jubilee-clipart-Jubilee-crown-red.svg) no-repeat center;
   background-size: 3.3em;
-  background-repeat: no-repeat;
-  background-position: center;
 }
+
 .O.king {
-  background: url(http://images.clipartpanda.com/jubilee-clipart-Jubilee-crown-blue.svg);
+  background: url(http://images.clipartpanda.com/jubilee-clipart-Jubilee-crown-blue.svg) no-repeat center;
   background-size: 3.3em;
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .piece {
@@ -108,27 +102,14 @@ div div:nth-child(2n+1) div:nth-child(2n+1),div div:nth-child(2n) div:nth-child(
   background-position: center;
 }
 
-.move:before, .can-jump:before {
-  position: absolute;
-  content: ' \25CF';
-  font-size: 117px;
-  top: -37px;
-  left: 24px;
-  z-index: -1;
-  color: yellow;
-  opacity: .7;
+.move, .can-jump {
+  cursor: pointer;
 }
 
 @media only screen and (max-width : 375px) {
   .row {
     height: 2.5rem;
     width: 22.8em;
-  }
-
-  .move:before, .can-jump:before {
-    font-size: 51px;
-    top: -18px;
-    left: 3px;
   }
 
   .piece, .legel-move {
