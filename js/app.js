@@ -1,3 +1,5 @@
+let demoJump = false;
+
 const board = {
   board: null,
   isPlayerRed: true,
@@ -8,15 +10,25 @@ const board = {
     let squareCount = 0;
     this.isPlayerRed = true;
     this.playComputer = false;
-    this.board = [
+    this.board = demoJump ? [
+      [0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 2, 0],
+      [0, 1, 0, 1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 2, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 2, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0],
+      [2, 0, 0, 0, 0, 0, 0, 0]
+    ]:
+    [
       [0, 1, 0, 1, 0, 1, 0, 1],
       [1, 0, 1, 0, 1, 0, 1, 0],
       [0, 1, 0, 1, 0, 1, 0, 1],
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0],
-      [0, 0, 0, 2, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0]
+      [2, 0, 2, 0, 2, 0, 2, 0],
+      [0, 2, 0, 2, 0, 2, 0, 2],
+      [2, 0, 2, 0, 2, 0, 2, 0]
     ];
     $(".row").remove();
     this.board.forEach((row, y) => {
@@ -157,6 +169,11 @@ $("#two-player").on("click", () => {
 })
 
 $("#play-again").on("click", () => {
+  board.initalize();
+})
+
+$("#demo").on("click", () => {
+  demoJump ? demoJump = false : demoJump = true;
   board.initalize();
 })
 
