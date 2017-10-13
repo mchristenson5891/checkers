@@ -1,21 +1,24 @@
 const board = {
-  board: [
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 0, 2, 0, 2, 0, 2, 0],
-    [0, 2, 0, 2, 0, 2, 0, 2],
-    [2, 0, 2, 0, 2, 0, 2, 0]
-  ],
+  board: null,
   isPlayerRed: true,
   playComputer: false,
 
   initalize: function () {
     let pieceCount = 0;
     let squareCount = 0;
-    $(".row").remove()
+    this.isPlayerRed = true;
+    this.playComputer = false;
+    this.board = [
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 2, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+    $(".row").remove();
     this.board.forEach((row, y) => {
       $(".container").append(`<div class="row" id=${y}></div>`)
       row.forEach((column, x) => {
@@ -35,8 +38,9 @@ const board = {
           this.board[y][x] = new Piece($(`#${y}>[data-column=${x}]`), [y, x]);
           pieceCount++;
         }
-      })
-    })
+      });
+    });
+    showOverlay();
     return findMoves()
   },
 
@@ -55,7 +59,7 @@ const board = {
     if ($(".can-jump").length > 0) {
       $(".move").removeClass("move");
     }
-    checkForWin();
+    if(checkForWin()) return;
     addClickToPieces();
     if (!board.isPlayerRed && this.playComputer) {
       setTimeout("computerMove()", 2000);
@@ -149,8 +153,11 @@ $("#play-computer").on("click", () => {
 
 $("#two-player").on("click", () => {
   board.playComputer = false;
-  $("#overlay").css({ display: "none" });
   hideOverlay();
+})
+
+$("#play-again").on("click", () => {
+  board.initalize();
 })
 
 Math.getDistance = function (x1, y1, x2, y2) {
@@ -158,8 +165,18 @@ Math.getDistance = function (x1, y1, x2, y2) {
 }
 
 function hideOverlay() {
-  $("#overlay").css({ display: "none" });
-  $("buttons").css({ display: "none" });
+  $("#overlay").hide();
+  $("#play-computer").hide();
+  $("#two-player").hide();
+  return;
+}
+
+function showOverlay() {
+  $("#overlay").show();
+  $("#play-computer").show();
+  $("#two-player").show();
+  $("#play-again").hide();
+  $("#message-box>h3").remove();
   return;
 }
 
@@ -314,13 +331,16 @@ function getRandomInt(min, max) {
 
 function checkForWin() {
   if ($(".X").length === 0) {
-    $("#overlay").css({ display: "block" });
-    $("#message-box").text("O WINS!")
+    $("#overlay").show();
+    $("#message-box").append("<h3>O WINS!</h3>")
+    return true
   } else if ($(".O").length === 0) {
-    $("#overlay").css({ display: "block" });
-    $("#message-box").text("X WINS!")
+    $("#play-again").show();
+    $("#overlay").show();
+    $("#message-box").append("<h3>X WINS!</h3>")
+    return true
   }
-  return;
+  return false;
 }
 
 board.initalize();

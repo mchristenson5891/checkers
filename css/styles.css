@@ -39,6 +39,10 @@ main {
   margin-left: -225px;
 }
 
+#play-again {
+  display: none;
+}
+
 button {
   padding: 16.8px 44px;
   color: #00A6B3;

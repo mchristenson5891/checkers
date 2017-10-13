@@ -15,10 +15,10 @@ When a player captures all thier opponets checkers, they win.
 
 # Technologies
 
-*HTML
-*Javascript
-*CSS
-*jQuery
+* HTML
+* Javascript
+* CSS
+* jQuery
 
 # Getting Started
 
