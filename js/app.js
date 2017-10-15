@@ -9,18 +9,17 @@ const board = {
     this.isPlayerRed = true;
     this.playComputer = false;
     this.board = [
-      [0, 1, 0, 1, 0, 1, 0, 1],
-      [1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 1, 0, 1],
-      [0, 0, 2, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 2, 0, 2, 0, 2, 0, 2],
       [2, 0, 2, 0, 2, 0, 2, 0],
       [0, 2, 0, 2, 0, 2, 0, 2],
-      [2, 0, 2, 0, 2, 0, 2, 0]
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 0]
     ];
 
     $(".row").remove();
-
     this.board.forEach((row, y) => {
       $(".container").append(`<div class="row" id=${y}></div>`)
       row.forEach((column, x) => {
@@ -43,13 +42,13 @@ const board = {
   },
 
   update: function () {
-    this.board.forEach((row, y) => {
-      row.forEach((column, x) => {
-        if (column instanceof Piece) {
-          if (column.canJump) {
-            $(column.element).addClass("can-jump");
-          } else if (column.hasMove) {
-            column.element.addClass("move");
+    this.board.forEach((row) => {
+      row.forEach((element) => {
+        if (element instanceof Piece) {
+          if (element.canJump) {
+            $(element.element).addClass("can-jump");
+          } else if (element.hasMove) {
+            element.element.addClass("move");
           }
         }
       })
@@ -155,24 +154,7 @@ function isNextSpaceEmpty(square, piece) {
   return Math.getDistance(square.x, square.y, piece.x, piece.y) === Math.sqrt(2) * 2;
 }
 
-$("#play-computer").on("click", () => {
-  board.playComputer = true;
-  hideOverlay();
-})
 
-$("#two-player").on("click", () => {
-  board.playComputer = false;
-  hideOverlay();
-})
-
-$("#play-again").on("click", () => {
-  board.initalize();
-})
-
-$("#demo").on("click", () => {
-  demoJump ? demoJump = false : demoJump = true;
-  board.initalize();
-})
 
 Math.getDistance = function (x1, y1, x2, y2) {
   return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
@@ -204,11 +186,11 @@ function checkForLegelMoves(currentPiece) {
         if (currentPiece.isKing) {
           square.inRange(currentPiece);
         } else if (currentPiece.player === "X") {
-          if (pieceSquareNumber < squareNumber) {
+          if (pieceSquareNumber > squareNumber) {
             square.inRange(currentPiece);
           }
         } else {
-          if (pieceSquareNumber > squareNumber) {
+          if (pieceSquareNumber < squareNumber) {
             square.inRange(currentPiece);
           }
         }
@@ -227,21 +209,18 @@ function addClickToPieces() {
     let currentPiece = getElement(this);
     removeLegelMove();
     board.activateSquare(currentPiece);
-    if (isThereAJump()) {
-      $(".col").not(".jump").removeClass("legal-move");
-    }
     addEventListeners(currentPiece);
   })
 }
 
 function isThereAJump() {
-  let isThereAJump = false;
+  let isItAJump = false;
   board.board.forEach((row) => {
     row.forEach((element) => {
-      element instanceof Square && element.isAJump ? isThereAJump = true : null;
+      element instanceof Square && element.isAJump ? isItAJump = true : null;
     })
   })
-  return isThereAJump;
+  return isItAJump;
 }
 
 function removeLegelMove() {
@@ -252,7 +231,7 @@ function removePiecesClick() {
   return $(".col").unbind().removeClass("turn can-jump move");
 }
 
-function jump(selectedSquare, piece) {
+function takeMiddlePiece(selectedSquare, piece) {
   return updateToSpace(selectedSquare.middlePiece(piece));
 }
 
@@ -278,12 +257,9 @@ function addEventListeners(piece) {
   $(".legal-move").on("click", function () {
     let selectedSquare = getElement(this);
     if (selectedSquare.isAJump) {
-      jump(selectedSquare, piece);
-    }
-    updateToSpace(piece);
-    updateToPiece(piece, selectedSquare);
-    if (selectedSquare.isAJump) {
-      removePiecesClick();
+      takeMiddlePiece(selectedSquare, piece); removePiecesClick();
+      updateToSpace(piece);
+      updateToPiece(piece, selectedSquare);
       removeLegelMove();
       board.clearMoves();
       checkForLegelMoves(piece);
@@ -292,22 +268,25 @@ function addEventListeners(piece) {
         addEventListeners(piece)
         if (!board.isPlayerRed) {
           return setTimeout("computerMove()", 500);
-        } else {
-          return;
         }
-
       }
     }
-    if (selectedSquare.y === 7 || selectedSquare.y === 0) {
-      piece.isKing = true;
-      $(piece.element).addClass("king");
-    }
+    updateToSpace(piece);
+    updateToPiece(piece, selectedSquare);
+    makeKing(selectedSquare, piece);
     removePiecesClick();
     removeLegelMove();
     board.isPlayerRed = board.isPlayerRed ? false : true;
     board.clearMoves();
     findMoves();
   })
+}
+
+function makeKing(selectedSquare, piece) {
+  if (selectedSquare.y === 7 || selectedSquare.y === 0) {
+    piece.isKing = true;
+    $(piece.element).addClass("king");
+  }
 }
 
 
@@ -350,6 +329,25 @@ function checkForWin() {
   }
   return false;
 }
+
+$("#play-computer").on("click", () => {
+  board.playComputer = true;
+  hideOverlay();
+})
+
+$("#two-player").on("click", () => {
+  board.playComputer = false;
+  hideOverlay();
+})
+
+$("#play-again").on("click", () => {
+  board.initalize();
+})
+
+$("#demo").on("click", () => {
+  demoJump ? demoJump = false : demoJump = true;
+  board.initalize();
+})
 
 board.initalize();
 
